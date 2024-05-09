@@ -25,7 +25,7 @@ import PostList from '@/components/PostList.vue';
 import PictureList from '@/components/PictureList.vue';
 import UserList from '@/components/UserList.vue';
 import MyDivider from '@/components/MyDivider.vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useLink, useRoute, useRouter } from 'vue-router';
 import myAxios from '@/plugins/myAxios';
 //创建路由实例
 const router = useRouter();
@@ -42,7 +42,8 @@ const searchParams = ref(initSearchParams);
 const postList = ref([]);
 const userList = ref([]);
 const pictureList = ref([]);
-const loadData = (params: any) => {
+//旧
+const loadDataOld = (params: any) => {
   const pictureQuery = {
     ...params,
     searchText: params.text,
@@ -64,7 +65,18 @@ const userQuery = {
 myAxios.post("/user/list/page/vo", userQuery).then((res: any) => {
   userList.value = res.records;
 });
-
+};
+//新
+const loadData = (params: any) => {
+  const query = {
+    ...params,
+    searchText: params.text,
+  };
+  myAxios.post("/search/all",query).then((res: any) => {
+  userList.value = res.userList;
+  pictureList.value = res.pictureList;
+  postList.value = res.postList;
+});
 };
 //监视路由变化
 watchEffect(() =>{
