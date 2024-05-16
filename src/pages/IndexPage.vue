@@ -1,7 +1,7 @@
 <template>
   <div class="index-page">
   <a-input-search
-      v-model:value="searchParams.text"
+      v-model:value="searchText"
       placeholder="input search text"
       enter-button
       @search="onSearch"
@@ -27,22 +27,25 @@ import UserList from '@/components/UserList.vue';
 import MyDivider from '@/components/MyDivider.vue';
 import { useLink, useRoute, useRouter } from 'vue-router';
 import myAxios from '@/plugins/myAxios';
+import { message } from 'ant-design-vue';
 //创建路由实例
 const router = useRouter();
 //获取路由所有信息
 const route = useRoute();
 const activeKey = route.params.category;
 const initSearchParams = {
+  type: activeKey,
   text:"",
   pageSize: 10,
   pageNum: 1,
 };
+const searchText = ref(route.query.text || "");
 //把initSearchParams变为响应式对象
 const searchParams = ref(initSearchParams);
 const postList = ref([]);
 const userList = ref([]);
 const pictureList = ref([]);
-//旧
+//旧 ：加载数据
 const loadDataOld = (params: any) => {
   const pictureQuery = {
     ...params,
@@ -66,8 +69,8 @@ myAxios.post("/user/list/page/vo", userQuery).then((res: any) => {
   userList.value = res.records;
 });
 };
-//新
-const loadData = (params: any) => {
+//新 ：加载聚合数据
+const loadAllData = (params: any) => {
   const query = {
     ...params,
     searchText: params.text,
@@ -78,19 +81,45 @@ const loadData = (params: any) => {
   postList.value = res.postList;
 });
 };
+//更新 ：加载单类数据
+const loadData = (params: any) => {
+  const {type} = params;
+  if(!type){
+    message.error("类别为空");
+    return;
+  }
+   const query = {
+    ...params,
+    searchText: params.text,
+  };
+  myAxios.post("/search/all",query).then((res: any) => {
+  if(type === "post"){
+  postList.value = res.dataList;
+  }else if(type === "user"){
+  userList.value = res.dataList;
+  }else if(type === "picture"){
+  pictureList.value = res.dataList;
+  }
+});
+};
 //监视路由变化
 watchEffect(() =>{
   searchParams.value = {
   ...initSearchParams,
   text: route.query.text,
+  type: route.params.category,
   } as any;
+  loadData(searchParams.value);
 });
 //用户每次搜索
 loadData(initSearchParams);
 const onSearch = (value: string) =>{
   //把搜索框里面的内容压到路由中
   router.push({
-    query: searchParams.value,
+    query:{
+      ...searchParams.value,
+      text: value,
+    },
   });
   loadData(searchParams.value);
 };
