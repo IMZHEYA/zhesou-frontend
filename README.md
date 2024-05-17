@@ -9,3 +9,16 @@
     <a href="https://github.com/IMZHEYA/zhesou-frontend"><img src="https://img.shields.io/badge/github-项目地址-yellow.svg?style=plasticr"></a>
     <a href="https://github.com/IMZHEYA/zhesou-backend"><img src="https://img.shields.io/badge/后端-项目地址-blueviolet.svg?style=plasticr"></a>
 </div>
+
+## 优势
+TO用户：提升用户的检索效率，提升用户体验。
+
+TO企业：无需针对每个项目都去开发一个搜索功能，当你有新的内容，新的网站时，可以复用同一套搜索系统，提高开发效率。
+
+## 技术栈
+前端
+
+vue,Ant Design Vue,Lodash
+后端
+
+Spring Boot , MySQL, Elasticsearch(Elastic Stack)搜索引擎，数据抓取，数据同步
